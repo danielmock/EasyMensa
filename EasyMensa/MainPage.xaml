@@ -23,8 +23,7 @@
 				<TextBlock x:Name="CategoryNameBlock"
 						   Text="{x:Bind Category}" />
 				<TextBlock Grid.Column="1"
-						   Text="{x:Bind Prices.Students}"
-						   Margin="0,0,0.333,0" />
+						   Text="{x:Bind Prices.Students}" />
 				<TextBlock Grid.Row="1"
 						   Grid.ColumnSpan="2"
 						   Text="{x:Bind Name}" 
@@ -32,42 +31,57 @@
 			</Grid>
 		</DataTemplate>
 
+		<converters:DateToStringConverter x:Key="DateToStringConverter" />
 		<converters:DecimalToCurrencyConverter x:Key="DecimalToCurrencyConverter" />
 	</Page.Resources>
 
-	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+	<Grid Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 
 		<!-- Title Bar -->
-		<StackPanel Padding="0"
-					Background="{ThemeResource AppBarBackgroundThemeBrush}">
-			<TextBlock Style="{ThemeResource TitleTextBlockStyle}"
-					   Margin="5,0,0,0">Mensa Academica</TextBlock>
+		<StackPanel Padding="10,10,10,5" 
+					BorderThickness="0,0,0,1"
+					BorderBrush="{ThemeResource SystemControlBackgroundAltHighBrush}"
+					Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}"
+					Orientation="Horizontal">
+			<TextBlock FontFamily="Segoe MDL2 Assets"
+					   Text="&#xED56;"
+					   Style="{ThemeResource BaseTextBlockStyle}"
+					   FontWeight="Normal"
+					   Margin="5"/>
+			<TextBlock Style="{ThemeResource BaseTextBlockStyle}"
+					   FontWeight="Bold">
+				MENSA ACADEMICA
+			</TextBlock>
 		</StackPanel>
 
 		<!-- Pivot -->
 		<Pivot Grid.Row="1"
 			   ItemsSource="{x:Bind MensaAcademica.Days}">
+			<!-- Pivot Header -->
 			<Pivot.HeaderTemplate>
 				<DataTemplate x:DataType="models:MensaDay">
 					<StackPanel>
 						<TextBlock Text="{x:Bind WeekDayName}"
 								   Style="{ThemeResource TitleTextBlockStyle}" />
-						<TextBlock Text="{x:Bind Date}"
+						<TextBlock Text="{x:Bind Date, Converter={StaticResource DateToStringConverter}}"
 								   Style="{ThemeResource CaptionTextBlockStyle}" />
 					</StackPanel>
 				</DataTemplate>
 			</Pivot.HeaderTemplate>
-			
+
 			<Pivot.ItemTemplate>
 				<DataTemplate x:DataType="models:MensaDay">
 					<ListView ItemsSource="{x:Bind Meals}">
+						<!-- ListView Template -->
 						<ListView.ItemTemplate>
 							<DataTemplate x:DataType="models:Meal">
-								<Grid>
+								<Grid BorderBrush="{ThemeResource SystemControlBackgroundAltHighBrush}"
+									  BorderThickness="0,0,0,1"
+									  Padding="10,2">
 									<Grid.RowDefinitions>
 										<RowDefinition />
 										<RowDefinition />
@@ -79,39 +93,50 @@
 									</Grid.ColumnDefinitions>
 									<TextBlock x:Name="CategoryNameBlock"
 											   Text="{x:Bind Category}"
-											   Style="{StaticResource CaptionTextBlockStyle}" />
+											   Style="{StaticResource BaseTextBlockStyle}" />
 									<TextBlock Grid.Column="1"
 											   Text="{x:Bind Prices.Students, Converter={StaticResource DecimalToCurrencyConverter}}"
-											   Style="{StaticResource CaptionTextBlockStyle}" 
-											   Foreground="{ThemeResource SystemControlForegroundAccentBrush}"/>
+											   Style="{StaticResource BaseTextBlockStyle}"
+											   Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
 									<TextBlock Grid.Row="1"
 											   Grid.ColumnSpan="2"
-											   Text="{x:Bind Name}" />
+											   Text="{x:Bind Name}"
+											   Style="{StaticResource BodyTextBlockStyle}" />
 									<TextBlock Grid.Row="2"
 											   Grid.ColumnSpan="2"
-											   Text="{x:Bind Description}" />
+											   Text="{x:Bind Description}"
+											   Style="{StaticResource BodyTextBlockStyle}"
+											   Foreground="{ThemeResource SystemControlBackgroundBaseMediumBrush}"/>
 								</Grid>
 							</DataTemplate>
 						</ListView.ItemTemplate>
-						
-						<!-- Stretches DataTemplate -->
+
+						<!-- Stretches DataTemplate & removes padding-->
 						<ListView.ItemContainerStyle>
 							<Style TargetType="ListViewItem">
-								<Setter Property="HorizontalAlignment" Value="Stretch" />
+								<Setter Property="HorizontalAlignment"
+										Value="Stretch" />
 								<Setter Property="HorizontalContentAlignment"
 										Value="Stretch" />
+								<Setter Property="Padding"
+										Value="0" />
+								<Setter Property="BorderThickness"
+										Value="0" />
 							</Style>
 						</ListView.ItemContainerStyle>
 					</ListView>
 				</DataTemplate>
 			</Pivot.ItemTemplate>
-			
-			<!--<Pivot.ItemContainerStyle>
+			<Pivot.ItemContainerStyle>
 				<Style TargetType="PivotItem">
-					<Setter Property="HorizontalAlignment"
-							Value="Stretch" />
+					<Setter Property="Padding"
+							Value="0" />
+					<Setter Property="Margin"
+							Value="0" />
+					<Setter Property="BorderThickness"
+							Value="0" />
 				</Style>
-			</Pivot.ItemContainerStyle>-->
+			</Pivot.ItemContainerStyle>
 		</Pivot>
 	</Grid>
 </Page>
