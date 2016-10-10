@@ -12,6 +12,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using EasyMensa.Models;
 
 // Die Vorlage "Leere Seite" ist unter http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 dokumentiert.
 
@@ -22,6 +23,8 @@ namespace EasyMensa
     /// </summary>
     public sealed partial class MainPage : Page
     {
+		private Canteen MensaAcademica = Canteen.GetCanteen(187);
+
         public MainPage()
         {
             this.InitializeComponent();
