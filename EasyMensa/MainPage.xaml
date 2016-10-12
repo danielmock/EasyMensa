@@ -9,10 +9,16 @@
 	  xmlns:converters="using:EasyMensa.Converters">
 
 	<Page.Resources>
+		<converters:DateToStringConverter x:Key="DateToStringConverter" />
+		<converters:DecimalToCurrencyConverter x:Key="DecimalToCurrencyConverter" />
+
 		<DataTemplate x:Key="MealTemplate"
 					  x:DataType="models:Meal">
-			<Grid>
+			<Grid BorderBrush="{ThemeResource MyBorderBrush}"
+				  BorderThickness="0,0,0,1"
+				  Padding="15,2">
 				<Grid.RowDefinitions>
+					<RowDefinition />
 					<RowDefinition />
 					<RowDefinition />
 				</Grid.RowDefinitions>
@@ -21,39 +27,46 @@
 					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 				<TextBlock x:Name="CategoryNameBlock"
-						   Text="{x:Bind Category}" />
+						   Text="{x:Bind Category}"
+						   Style="{StaticResource BaseTextBlockStyle}" />
 				<TextBlock Grid.Column="1"
-						   Text="{x:Bind Prices.Students}" />
+						   Text="{x:Bind Prices.Students, Converter={StaticResource DecimalToCurrencyConverter}}"
+						   Style="{StaticResource BaseTextBlockStyle}"
+						   Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
 				<TextBlock Grid.Row="1"
 						   Grid.ColumnSpan="2"
-						   Text="{x:Bind Name}" 
-						   />
+						   Text="{x:Bind Name}"
+						   Style="{StaticResource SubtitleTextBlockStyle}" />
+				<TextBlock Grid.Row="2"
+						   Grid.ColumnSpan="2"
+						   Text="{x:Bind Description}"
+						   Style="{StaticResource BodyTextBlockStyle}"
+						   Foreground="{ThemeResource SystemControlBackgroundBaseMediumBrush}" />
 			</Grid>
 		</DataTemplate>
-
-		<converters:DateToStringConverter x:Key="DateToStringConverter" />
-		<converters:DecimalToCurrencyConverter x:Key="DecimalToCurrencyConverter" />
 	</Page.Resources>
-
-	<Grid Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}">
+	
+	<Grid Background="{ThemeResource MyPaneBackgroundBrush}">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 
 		<!-- Title Bar -->
-		<StackPanel Padding="10,10,10,5" 
+		<StackPanel Padding="15" 
 					BorderThickness="0,0,0,1"
-					BorderBrush="{ThemeResource SystemControlBackgroundAltHighBrush}"
-					Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}"
+					BorderBrush="{ThemeResource MyBorderBrush}"
+					Background="{ThemeResource MyTitleBarBackgroundBrush}"
 					Orientation="Horizontal">
 			<TextBlock FontFamily="Segoe MDL2 Assets"
 					   Text="&#xED56;"
 					   Style="{ThemeResource BaseTextBlockStyle}"
 					   FontWeight="Normal"
-					   Margin="5"/>
+					   Margin="0,0,10,0"
+					   RequestedTheme="Dark" />
 			<TextBlock Style="{ThemeResource BaseTextBlockStyle}"
-					   FontWeight="Bold">
+					   FontWeight="Bold"
+					   RequestedTheme="Dark">
 				MENSA ACADEMICA
 			</TextBlock>
 		</StackPanel>
@@ -75,41 +88,8 @@
 
 			<Pivot.ItemTemplate>
 				<DataTemplate x:DataType="models:MensaDay">
-					<ListView ItemsSource="{x:Bind Meals}">
-						<!-- ListView Template -->
-						<ListView.ItemTemplate>
-							<DataTemplate x:DataType="models:Meal">
-								<Grid BorderBrush="{ThemeResource SystemControlBackgroundAltHighBrush}"
-									  BorderThickness="0,0,0,1"
-									  Padding="10,2">
-									<Grid.RowDefinitions>
-										<RowDefinition />
-										<RowDefinition />
-										<RowDefinition />
-									</Grid.RowDefinitions>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="Auto" />
-									</Grid.ColumnDefinitions>
-									<TextBlock x:Name="CategoryNameBlock"
-											   Text="{x:Bind Category}"
-											   Style="{StaticResource BaseTextBlockStyle}" />
-									<TextBlock Grid.Column="1"
-											   Text="{x:Bind Prices.Students, Converter={StaticResource DecimalToCurrencyConverter}}"
-											   Style="{StaticResource BaseTextBlockStyle}"
-											   Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
-									<TextBlock Grid.Row="1"
-											   Grid.ColumnSpan="2"
-											   Text="{x:Bind Name}"
-											   Style="{StaticResource BodyTextBlockStyle}" />
-									<TextBlock Grid.Row="2"
-											   Grid.ColumnSpan="2"
-											   Text="{x:Bind Description}"
-											   Style="{StaticResource BodyTextBlockStyle}"
-											   Foreground="{ThemeResource SystemControlBackgroundBaseMediumBrush}"/>
-								</Grid>
-							</DataTemplate>
-						</ListView.ItemTemplate>
+					<ListView ItemsSource="{x:Bind Meals}"
+							  ItemTemplate="{StaticResource MealTemplate}">
 
 						<!-- Stretches DataTemplate & removes padding-->
 						<ListView.ItemContainerStyle>

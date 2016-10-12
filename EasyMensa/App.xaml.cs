@@ -7,6 +7,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -77,7 +78,19 @@ namespace EasyMensa
                 // Sicherstellen, dass das aktuelle Fenster aktiv ist
                 Window.Current.Activate();
             }
-        }
+
+			// Verändert die Statusbar auf Mobilen Geräten
+			if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+			{
+				var statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
+				if (statusBar != null)
+				{
+					statusBar.BackgroundOpacity = 1;
+					statusBar.BackgroundColor = ((SolidColorBrush) Current.Resources["MyTitleBarBackgroundBrush"]).Color;
+					statusBar.ForegroundColor = Colors.White;
+				}
+			}
+		}
 
         /// <summary>
         /// Wird aufgerufen, wenn die Navigation auf eine bestimmte Seite fehlschlägt
