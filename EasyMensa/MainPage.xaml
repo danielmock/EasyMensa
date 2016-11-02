@@ -6,17 +6,20 @@
 	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	  mc:Ignorable="d"
 	  xmlns:models="using:EasyMensa.Models"
-	  xmlns:converters="using:EasyMensa.Converters">
+	  xmlns:converters="using:EasyMensa.Converters"
+	  xmlns:converters1="using:Microsoft.Toolkit.Uwp.UI.Converters">
 
 	<Page.Resources>
+		<!-- Converters and Shit -->
 		<converters:DateToStringConverter x:Key="DateToStringConverter" />
 		<converters:DecimalToCurrencyConverter x:Key="DecimalToCurrencyConverter" />
+		<converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
 		<DataTemplate x:Key="MealTemplate"
 					  x:DataType="models:Meal">
 			<Grid BorderBrush="{ThemeResource MyBorderBrush}"
 				  BorderThickness="0,0,0,1"
-				  Padding="15,2">
+				  Padding="20,2">
 				<Grid.RowDefinitions>
 					<RowDefinition />
 					<RowDefinition />
@@ -29,17 +32,17 @@
 				<TextBlock x:Name="CategoryNameBlock"
 						   Text="{x:Bind Category}"
 						   Style="{StaticResource BaseTextBlockStyle}" />
-				<TextBlock Grid.Column="1"
+				<TextBlock Grid.Row="0" Grid.Column="1"
 						   Text="{x:Bind Prices.Students, Converter={StaticResource DecimalToCurrencyConverter}}"
 						   Style="{StaticResource BaseTextBlockStyle}"
 						   Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
 				<TextBlock Grid.Row="1"
-						   Grid.ColumnSpan="2"
-						   Text="{x:Bind Name}"
+						   Grid.ColumnSpan="2" Grid.Column="0"
+				           Text="{x:Bind Name}"
 						   Style="{StaticResource SubtitleTextBlockStyle}" />
 				<TextBlock Grid.Row="2"
-						   Grid.ColumnSpan="2"
-						   Text="{x:Bind Description}"
+						   Grid.ColumnSpan="2" Grid.Column="0"
+				           Text="{x:Bind Description}"
 						   Style="{StaticResource BodyTextBlockStyle}"
 						   Foreground="{ThemeResource SystemControlBackgroundBaseMediumBrush}" />
 			</Grid>
@@ -53,27 +56,42 @@
 		</Grid.RowDefinitions>
 
 		<!-- Title Bar -->
-		<StackPanel Padding="15" 
-					BorderThickness="0,0,0,1"
+		<StackPanel BorderThickness="0,0,0,1"
 					BorderBrush="{ThemeResource MyBorderBrush}"
 					Background="{ThemeResource MyTitleBarBackgroundBrush}"
 					Orientation="Horizontal">
-			<TextBlock FontFamily="Segoe MDL2 Assets"
+			<!--<TextBlock FontFamily="Segoe MDL2 Assets"
 					   Text="&#xED56;"
 					   Style="{ThemeResource BaseTextBlockStyle}"
 					   FontWeight="Normal"
 					   Margin="0,0,10,0"
-					   RequestedTheme="Dark" />
+					   RequestedTheme="Dark" />-->
+			<Button Name="HamburgerButton"
+					FontFamily="Segoe MDL2 Assets"
+					Content="&#xE700;" 
+					Background="Transparent"
+					FontSize="15"
+					VerticalAlignment="Center" />
 			<TextBlock Style="{ThemeResource BaseTextBlockStyle}"
 					   FontWeight="Bold"
-					   RequestedTheme="Dark">
-				MENSA ACADEMICA
-			</TextBlock>
+					   RequestedTheme="Dark"
+					   VerticalAlignment="Center"
+					   Text="MENSA ACADEMICA" Margin="10"/>
 		</StackPanel>
 
+		<!-- Busy Indicator -->
+		<ProgressRing Grid.Row="1"
+					  Visibility="{x:Bind MensaAcademica.IsNotCompleted, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" 
+					  IsActive="True" />
+		
+		<!-- Error -->
+		<TextBlock Text="{x:Bind MensaAcademica.ErrorMessage}"
+				   Grid.Row="1"
+				   Visibility="{x:Bind MensaAcademica.IsFaulted, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+		
 		<!-- Pivot -->
 		<Pivot Grid.Row="1"
-			   ItemsSource="{x:Bind MensaAcademica.Days}">
+			   ItemsSource="{x:Bind MensaAcademica.Result.Days, Mode=OneWay}" >
 			<!-- Pivot Header -->
 			<Pivot.HeaderTemplate>
 				<DataTemplate x:DataType="models:MensaDay">

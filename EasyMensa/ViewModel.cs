@@ -8,7 +8,7 @@ namespace EasyMensa
 
 		public ViewModel()
 		{
-			MensaAcademica = Canteen.GetCanteen(187);
+			MensaAcademica = OpenMensaFetcher.GetCanteenAysnc(187).Result;
 		}
 	}
 }
