@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -51,12 +52,18 @@ namespace EasyMensa.Models
 			{
 				var response = httpClient.GetStringAsync($"{OpenmensaUrl}{mensaId}/days/{date:yyyy-MM-dd}/meals");
 				var json = await response.ConfigureAwait(false);
-				result = JsonConvert.DeserializeObject<List<Meal>>(json);
+				// settings ignore null values in data
+				result = JsonConvert.DeserializeObject<List<Meal>>(json, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 			}
 
 			return result;
 		}
 
+		/// <summary>
+		/// Returns a Canteen object with complete menus for "open" days
+		/// </summary>
+		/// <param name="mensaId">ID of Mensa specified by OpenMensa API</param>
+		/// <returns></returns>
 		public static async Task<Canteen> GetCanteenAysnc(int mensaId)
 		{
 			Canteen canteen = await FetchCanteenAsync(mensaId).ConfigureAwait(false);
@@ -65,7 +72,8 @@ namespace EasyMensa.Models
 
 			foreach (var mensaDay in canteen.Days)
 			{
-				mensaDay.Meals = await FetchMealsAsync(mensaId, mensaDay.Date).ConfigureAwait(false);
+				if (!mensaDay.Closed)
+					mensaDay.Meals = await FetchMealsAsync(mensaId, mensaDay.Date).ConfigureAwait(false);
 			}
 
 			return canteen;

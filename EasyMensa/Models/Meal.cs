@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace EasyMensa.Models
 {
 	public class Meal
 	{
 		private string _name;
-
-		// Properties
+		
 		public int Id { get; set; }
 
 		public string Name
@@ -36,13 +32,21 @@ namespace EasyMensa.Models
 
 		public List<string> Notes { get; set; }
 
+		public Meal(string name, int id, string category, Prices prices, List<string> notes)
+		{
+			Name = name;
+			Id = id;
+			Category = category;
+			Prices = prices;
+			Notes = notes;
+		}
 	}
 
 	public class Prices
 	{
 		public decimal Students { get; set; }
-		public object Employees { get; set; }
-		public object Pupils { get; set; }
+		public decimal Employees { get; set; }
+		public decimal Pupils { get; set; }
 		public decimal Others { get; set; }
 	}
 }

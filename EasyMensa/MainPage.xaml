@@ -106,23 +106,32 @@
 
 			<Pivot.ItemTemplate>
 				<DataTemplate x:DataType="models:MensaDay">
-					<ListView ItemsSource="{x:Bind Meals}"
-							  ItemTemplate="{StaticResource MealTemplate}">
+					<StackPanel>
+						<!-- Closed Day -->
+						<TextBlock Text="Die Mensa ist heute leider geschlossen."
+								   Visibility="{x:Bind Closed, Converter={StaticResource BoolToVisibilityConverter}}" />
+						
+						<!-- Open Day -->
+						<ListView ItemsSource="{x:Bind Meals}"
+								  ItemTemplate="{StaticResource MealTemplate}">
 
-						<!-- Stretches DataTemplate & removes padding-->
-						<ListView.ItemContainerStyle>
-							<Style TargetType="ListViewItem">
-								<Setter Property="HorizontalAlignment"
-										Value="Stretch" />
-								<Setter Property="HorizontalContentAlignment"
-										Value="Stretch" />
-								<Setter Property="Padding"
-										Value="0" />
-								<Setter Property="BorderThickness"
-										Value="0" />
-							</Style>
-						</ListView.ItemContainerStyle>
-					</ListView>
+							<!-- Stretches DataTemplate & removes padding-->
+							<ListView.ItemContainerStyle>
+								<Style TargetType="ListViewItem">
+									<Setter Property="HorizontalAlignment"
+											Value="Stretch" />
+									<Setter Property="HorizontalContentAlignment"
+											Value="Stretch" />
+									<Setter Property="Padding"
+											Value="0" />
+									<Setter Property="BorderThickness"
+											Value="0" />
+								</Style>
+							</ListView.ItemContainerStyle>
+						</ListView>
+					</StackPanel>
+					
+					
 				</DataTemplate>
 			</Pivot.ItemTemplate>
 			<Pivot.ItemContainerStyle>
