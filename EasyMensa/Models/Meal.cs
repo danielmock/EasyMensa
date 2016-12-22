@@ -44,9 +44,9 @@ namespace EasyMensa.Models
 
 	public class Prices
 	{
-		public decimal Students { get; set; }
-		public decimal Employees { get; set; }
-		public decimal Pupils { get; set; }
-		public decimal Others { get; set; }
+		public float? Students { get; set; }
+		public float? Employees { get; set; }
+		public float? Pupils { get; set; }
+		public float? Others { get; set; }
 	}
 }

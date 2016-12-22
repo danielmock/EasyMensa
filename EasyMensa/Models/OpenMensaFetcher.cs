@@ -53,7 +53,7 @@ namespace EasyMensa.Models
 				var response = httpClient.GetStringAsync($"{OpenmensaUrl}{mensaId}/days/{date:yyyy-MM-dd}/meals");
 				var json = await response.ConfigureAwait(false);
 				// settings ignore null values in data
-				result = JsonConvert.DeserializeObject<List<Meal>>(json, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+				result = JsonConvert.DeserializeObject<List<Meal>>(json);
 			}
 
 			return result;
