@@ -97,6 +97,7 @@
     </Compile>
     <Compile Include="Converters\DateToStringConverter.cs" />
     <Compile Include="Converters\DecimalToCurrencyConverter.cs" />
+    <Compile Include="Converters\StringToVisibilityConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

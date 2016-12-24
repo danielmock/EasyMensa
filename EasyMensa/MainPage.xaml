@@ -13,8 +13,10 @@
 		<!-- Converters and Shit -->
 		<converters:DateToStringConverter x:Key="DateToStringConverter" />
 		<converters:DecimalToCurrencyConverter x:Key="DecimalToCurrencyConverter" />
+		<converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
 		<converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 
+		<!-- Meal Templata for ListView -->
 		<DataTemplate x:Key="MealTemplate"
 					  x:DataType="models:Meal">
 			<Grid BorderBrush="{ThemeResource MyBorderBrush}"
@@ -42,7 +44,8 @@
 						   Style="{StaticResource SubtitleTextBlockStyle}" />
 				<TextBlock Grid.Row="2"
 						   Grid.ColumnSpan="2" Grid.Column="0"
-				           Text="{x:Bind Description}"
+						   Text="{x:Bind Description}"
+						   Visibility="{x:Bind Description, Converter={StaticResource StringToVisibilityConverter}}"
 						   Style="{StaticResource BodyTextBlockStyle}"
 						   Foreground="{ThemeResource SystemControlBackgroundBaseMediumBrush}" />
 			</Grid>
