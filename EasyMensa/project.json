@@ -4,6 +4,7 @@
     "Microsoft.Toolkit.Uwp": "1.2.0",
     "Microsoft.Toolkit.Uwp.Notifications": "1.2.0",
     "Microsoft.Toolkit.Uwp.UI": "1.2.0",
+    "MvvmLight": "5.3.0",
     "Newtonsoft.Json": "9.0.1"
   },
   "frameworks": {

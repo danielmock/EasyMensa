@@ -2,9 +2,11 @@
     x:Class="EasyMensa.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:EasyMensa">
+    xmlns:local="using:EasyMensa"
+    xmlns:viewModels="using:EasyMensa.ViewModels">
 
 	<Application.Resources>
 		<ResourceDictionary Source="MyResourceDictionary.xaml" />
+		<!--<viewModels:ViewModelLocator xmlns:viewModels="using:EasyMensa.ViewModels" x:Key="Locator" />-->
 	</Application.Resources>
 </Application>

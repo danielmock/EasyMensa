@@ -98,6 +98,7 @@
     <Compile Include="Converters\DateToStringConverter.cs" />
     <Compile Include="Converters\DecimalToCurrencyConverter.cs" />
     <Compile Include="Converters\StringToVisibilityConverter.cs" />
+    <Compile Include="Converters\ToObjectConverter.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -108,7 +109,8 @@
     <Compile Include="NotifyTastCompletion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel.cs" />
-    <Compile Include="ViewModels\CanteenViewModel.cs" />
+    <Compile Include="ViewModels\CanteenCollectionViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
