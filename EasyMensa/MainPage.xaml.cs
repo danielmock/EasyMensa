@@ -1,7 +1,6 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using EasyMensa.Models;
 using EasyMensa.ViewModels;
 
 // Die Vorlage "Leere Seite" ist unter http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 dokumentiert.

@@ -1,4 +1,4 @@
-﻿using EasyMensa.Models;
+﻿using Test.Models;
 
 namespace EasyMensa
 {

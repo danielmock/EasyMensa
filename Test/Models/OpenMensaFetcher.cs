@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace EasyMensa.Models
+
+namespace Test.Models
 {
-	internal static class OpenMensaFetcher
+	public static class OpenMensaFetcher
 	{
 		private const string OpenmensaUrl = "http://openmensa.org/api/v2/canteens/";
 
-		private static async Task<Canteen> FetchCanteenAsync(int id)
+		public static async Task<Canteen> FetchCanteenAsync(int id)
 		{
 			Canteen result;
 
@@ -25,7 +25,7 @@ namespace EasyMensa.Models
 			return result;
 		}
 
-		private static async Task<List<MensaDay>> FetchOpenDaysAync(int mensaId)
+		public static async Task<List<MensaDay>> FetchOpenDaysAync(int mensaId)
 		{
 			List<MensaDay> result;
 
@@ -44,7 +44,7 @@ namespace EasyMensa.Models
 			return result;
 		}
 
-		private static async Task<List<Meal>> FetchMealsAsync(int mensaId, DateTime date)
+		public static async Task<List<Meal>> FetchMealsAsync(int mensaId, DateTime date)
 		{
 			List<Meal> result;
 

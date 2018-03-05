@@ -3,10 +3,10 @@
 	  xmlns:local="using:EasyMensa"
 	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	  xmlns:models="using:EasyMensa.Models"
-	  xmlns:converters="using:EasyMensa.Converters"
+      xmlns:converters="using:EasyMensa.Converters"
 	  xmlns:converters1="using:Microsoft.Toolkit.Uwp.UI.Converters"
 	  xmlns:viewModels="using:EasyMensa.ViewModels"
+	  xmlns:models="using:Test.Models"
 	  x:Class="EasyMensa.MainPage"
 	  mc:Ignorable="d">
 

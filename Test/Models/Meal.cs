@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EasyMensa.Models
+namespace Test.Models
 {
 	public class Meal
 	{
@@ -29,6 +29,10 @@ namespace EasyMensa.Models
 					Description =
 						$"mit {string.Join(", ", substrings.Skip(1).Take(substrings.Length - 2))} und {substrings[substrings.Length - 1]}";
 				}
+				else
+				{
+					Description = string.Empty;
+				}
 			}
 		}
 
@@ -47,17 +51,6 @@ namespace EasyMensa.Models
 			Category = category;
 			Prices = prices;
 			Notes = notes;
-		}
-
-		private static string ReplaceLastOccurrence(string source, string find, string replace)
-		{
-			int place = source.LastIndexOf(find);
-
-			if (place == -1)
-				return source;
-
-			string result = source.Remove(place, find.Length).Insert(place, replace);
-			return result;
 		}
 	}
 

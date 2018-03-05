@@ -42,7 +42,7 @@
       </uap:VisualElements>
 			<Extensions>
 				<uap:Extension Category="windows.appService"
-          EntryPoint="EasyMensa.VoiceCommands.VoiceCommandService">
+          EntryPoint="EasyMensa.VoiceCommands.EasyMensaVoiceCommandService">
 					<uap:AppService Name="EasyMensaVoiceCommandService"/>
 				</uap:Extension>
 				<uap:Extension Category="windows.personalAssistantLaunch"/>

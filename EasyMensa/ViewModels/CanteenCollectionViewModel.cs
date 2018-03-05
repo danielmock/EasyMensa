@@ -6,8 +6,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using EasyMensa.Models;
 using GalaSoft.MvvmLight;
+using Test.Models;
 
 namespace EasyMensa.ViewModels
 {
@@ -33,7 +33,6 @@ namespace EasyMensa.ViewModels
 				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(93)),  //  Cafete
 				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(99)),  //  Goethe
 				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(98)),  //  EUPS
-				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(187))  //  Bayernalle
 			};
 
 			SelectedCanteen = canteenCollection[0];

@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
+using Windows.ApplicationModel.VoiceCommands;
+using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
@@ -38,7 +32,7 @@ namespace EasyMensa
         /// werden z. B. verwendet, wenn die Anwendung gestartet wird, um eine bestimmte Datei zu öffnen.
         /// </summary>
         /// <param name="e">Details über Startanforderung und -prozess.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        protected override async void OnLaunched(LaunchActivatedEventArgs e)
         {
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -90,7 +84,9 @@ namespace EasyMensa
 					statusBar.ForegroundColor = Colors.White;
 				}
 			}
-		}
+
+			await InstallVCD();
+        }
 
         /// <summary>
         /// Wird aufgerufen, wenn die Navigation auf eine bestimmte Seite fehlschlägt
@@ -115,5 +111,18 @@ namespace EasyMensa
             //TODO: Anwendungszustand speichern und alle Hintergrundaktivitäten beenden
             deferral.Complete();
         }
-    }
+
+	    private async Task InstallVCD()
+		{
+			try
+			{
+				StorageFile vcdStorageFile = await Package.Current.InstalledLocation.GetFileAsync(@"EasyMensaCommands.xml");
+				await VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(vcdStorageFile);
+			}
+			catch (Exception)
+			{
+				// ignored
+			}
+		}
+	}
 }

@@ -11,6 +11,8 @@ using Windows.ApplicationModel.Resources.Core;
 using Windows.ApplicationModel.VoiceCommands;
 using Windows.Storage;
 using EasyMensa;
+using Test.Models;
+
 namespace EasyMensa.VoiceCommands
 {
 
@@ -95,8 +97,7 @@ namespace EasyMensa.VoiceCommands
 				try
 				{
 					voiceServiceConnection =
-						VoiceCommandServiceConnection.FromAppServiceTriggerDetails(
-							triggerDetails);
+						VoiceCommandServiceConnection.FromAppServiceTriggerDetails(triggerDetails);
 
 					voiceServiceConnection.VoiceCommandCompleted += OnVoiceCommandCompleted;
 
@@ -127,13 +128,53 @@ namespace EasyMensa.VoiceCommands
 			}
 		}
 
-
+		/// <summary>
+		/// Sends the today's canteen menu (async) to Cortana.
+		/// Cortana then displays the first four entries of the Menu: Tellergericht, Vegetarisch, Empfehlung, Klassiker
+		/// The Klassiker is read out loud
+		/// Only for today,de-DE, mensa academica (187)
+		/// </summary>
+		/// <returns></returns>
 		private async Task SendMenuAsync()
 		{
-			var userPrompt = new VoiceCommandUserMessage();
-			
-			userPrompt.DisplayMessage = userPrompt.SpokenMessage = 
+			var mealList = await OpenMensaFetcher.FetchMealsAsync(187, DateTime.Today);
+			var mealContentTiles = new List<VoiceCommandContentTile>();
+
+			// check for Tellergericht, Vegetarisch, Empfehlung, Klassiker
+			// needs to be changed if the order imposed by the API changes
+			for (var j = 0; j < 4; j++)
+			{
+				var meal = mealList[j];
+				var mealTile = new VoiceCommandContentTile
+				{
+					ContentTileType = VoiceCommandContentTileType.TitleWithText,
+					Title = meal.Name,
+					TextLine1 = meal.Description,
+					TextLine2 = meal.Category,
+					TextLine3 = string.Format("{0:C2}", meal.Prices.Students)
+				};
+				mealContentTiles.Add(mealTile);
+			}
+
+			var userMessage = new VoiceCommandUserMessage
+			{
+				DisplayMessage = $"Das Menü für heute, {DateTime.Today.ToString("dddd", new CultureInfo("de-DE"))}:",
+				SpokenMessage = $"Der Klassiker ist {mealContentTiles[3].Title}!" //respond with klassiker
+			};
+
+			var response = VoiceCommandResponse.CreateResponse(userMessage, mealContentTiles);
+
+			await voiceServiceConnection.ReportSuccessAsync(response);
 		}
+
+		private async Task RespondToUser(string text)
+		{
+			var userMessage = new VoiceCommandUserMessage();
+			userMessage.DisplayMessage = userMessage.SpokenMessage = text;
+			VoiceCommandResponse response = VoiceCommandResponse.CreateResponse(userMessage);
+			await voiceServiceConnection.ReportSuccessAsync(response);
+		}
+
 
 		/// <summary>
 		/// Provide a simple response that launches the app. Expected to be used in the
@@ -141,8 +182,10 @@ namespace EasyMensa.VoiceCommands
 		/// </summary>
 		private async void LaunchAppInForeground()
 		{
-			var userMessage = new VoiceCommandUserMessage();
-			userMessage.SpokenMessage = cortanaResourceMap.GetValue("LaunchingAdventureWorks", cortanaContext).ValueAsString;
+			var userMessage = new VoiceCommandUserMessage
+			{
+				SpokenMessage = cortanaResourceMap.GetValue("LaunchingAdventureWorks", cortanaContext).ValueAsString
+			};
 
 			var response = VoiceCommandResponse.CreateResponse(userMessage);
 
@@ -161,10 +204,7 @@ namespace EasyMensa.VoiceCommands
 		/// <param name="args">Contains an Enumeration indicating why the command was terminated.</param>
 		private void OnVoiceCommandCompleted(VoiceCommandServiceConnection sender, VoiceCommandCompletedEventArgs args)
 		{
-			if (this.serviceDeferral != null)
-			{
-				this.serviceDeferral.Complete();
-			}
+			serviceDeferral?.Complete();
 		}
 
 		/// <summary>
@@ -177,12 +217,8 @@ namespace EasyMensa.VoiceCommands
 		private void OnTaskCanceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
 		{
 			System.Diagnostics.Debug.WriteLine("Task cancelled, clean up");
-			if (this.serviceDeferral != null)
-			{
-				//Complete the service deferral
-				this.serviceDeferral.Complete();
-			}
-
+			//Complete the service deferral
+			serviceDeferral?.Complete();
 		}
 	}
 }

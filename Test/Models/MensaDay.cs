@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EasyMensa.Models
+namespace Test.Models
 {
 	public class MensaDay
 	{
