@@ -17,12 +17,12 @@
 		<converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
 		<converters1:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
 		<converters:ToObjectConverter x:Key="ToObjectConverter" />
+		<converters:StringListToStringConverter x:Key="StringListToStringConverter" />
 		
-		<!-- Meal Templata for ListView -->
+		<!-- Meal Template for ListView -->
 		<DataTemplate x:Key="MealTemplate" x:DataType="models:Meal">
 			<Grid BorderBrush="{ThemeResource MyBorderBrush}"
-				  BorderThickness="0,0,0,1"
-				  Padding="20,2">
+				  Padding="20,5">
 				<Grid.RowDefinitions>
 					<RowDefinition />
 					<RowDefinition />
@@ -54,6 +54,50 @@
 						   Foreground="{ThemeResource SystemControlBackgroundBaseMediumBrush}" />
 			</Grid>
 		</DataTemplate>
+
+		<!-- Expanded Meal Template for ListView (when clicked on) -->
+		<DataTemplate x:Key="MealTemplateExpanded"
+					  x:DataType="models:Meal">
+			<Grid BorderBrush="{ThemeResource MyBorderBrush}"
+				  Padding="20,5">
+				<Grid.RowDefinitions>
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+					<RowDefinition />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBlock x:Name="CategoryNameBlock"
+						   Text="{x:Bind Category}"
+						   Style="{StaticResource BaseTextBlockStyle}" />
+				<TextBlock Grid.Row="0"
+						   Grid.Column="1"
+						   Text="{x:Bind Prices.Students, Converter={StaticResource DecimalToCurrencyConverter}}"
+						   Style="{StaticResource BaseTextBlockStyle}"
+						   Foreground="{ThemeResource SystemControlForegroundAccentBrush}" />
+				<TextBlock Grid.Row="1"
+						   Grid.ColumnSpan="2"
+						   Grid.Column="0"
+						   Text="{x:Bind Name}"
+						   Style="{StaticResource SubtitleTextBlockStyle}" />
+				<TextBlock Grid.Row="2"
+						   Grid.ColumnSpan="2"
+						   Grid.Column="0"
+						   Text="{x:Bind Description}"
+						   Visibility="{x:Bind Description, Converter={StaticResource StringToVisibilityConverter}}"
+						   Style="{StaticResource BodyTextBlockStyle}"
+						   Foreground="{ThemeResource SystemControlBackgroundBaseMediumBrush}" />
+				<TextBlock Grid.Row="3"
+						   Grid.ColumnSpan="2"
+						   Grid.Column="0"
+						   Text="{x:Bind Notes, Converter={StaticResource StringListToStringConverter}}"
+						   Style="{StaticResource BodyTextBlockStyle}"
+						   Foreground="{ThemeResource SystemControlBackgroundBaseMediumBrush}" />
+			</Grid>
+		</DataTemplate>
 	</Page.Resources>
 
 	<Page.DataContext>
@@ -69,10 +113,10 @@
 		</Grid.RowDefinitions>
 
 		<!-- Title Bar -->
-		<StackPanel BorderThickness="0,0,0,1"
-					BorderBrush="{ThemeResource MyBorderBrush}"
+		<StackPanel BorderThickness="0"
 					Background="{ThemeResource MyTitleBarBackgroundBrush}"
-					Orientation="Horizontal">
+					Orientation="Horizontal"
+					Padding="5">
 			
 			<!--<TextBlock FontFamily="Segoe MDL2 Assets"
 					   Text="&#xED56;"
@@ -90,11 +134,11 @@
 					Click="HamburgerButton_OnClick"/>
 			
 			<TextBlock Style="{ThemeResource BaseTextBlockStyle}"
+					   Typography.Capitals="SmallCaps"
 					   FontWeight="Bold"
 					   RequestedTheme="Dark"
 					   VerticalAlignment="Center"
-					   Text="{Binding SelectedCanteen.Result.Name}"
-					   Margin="10" />
+					   Text="{x:Bind ViewModel.SelectedCanteen.Result.Name, Mode=OneWay}" />
 		</StackPanel>
 
 		<!-- Busy Indicator -->
@@ -107,12 +151,16 @@
 				   Grid.Row="1"
 				   Visibility="{x:Bind ViewModel.SelectedCanteen.IsFaulted, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
 
+		<!-- -->
 		<SplitView Name="MySplitView"
 			Grid.Row="1">
 			
+			<!-- Pane -->
 			<SplitView.Pane>
 				<ListView ItemsSource="{x:Bind ViewModel.canteenCollection}"
-						  SelectedItem="{Binding SelectedCanteen, Mode=TwoWay}">
+						  SelectedItem="{Binding SelectedCanteen, Mode=TwoWay}"
+						  ItemClick="HamburgerButton_OnClick"
+						  IsItemClickEnabled="True">
 					<ListView.ItemTemplate>
 						<DataTemplate>
 							<TextBlock Text="{Binding Result.Name}" />
@@ -137,11 +185,13 @@
 						</DataTemplate>
 					</Pivot.HeaderTemplate>
 
+					<!-- Meals List -->
 					<Pivot.ItemTemplate>
 						<DataTemplate x:DataType="models:MensaDay">
 							<!-- Open Day -->
 							<ListView ItemsSource="{x:Bind Meals}"
-									  ItemTemplate="{StaticResource MealTemplate}">
+									  ItemTemplate="{StaticResource MealTemplate}"
+									  SelectionChanged="MealList_OnSelectionChanged">
 
 								<!-- Stretches DataTemplate & removes padding-->
 								<ListView.ItemContainerStyle>
@@ -151,9 +201,9 @@
 										<Setter Property="HorizontalContentAlignment"
 												Value="Stretch" />
 										<Setter Property="Padding"
-												Value="0" />
+												Value="2" />
 										<Setter Property="BorderThickness"
-												Value="0" />
+												Value="2" />
 									</Style>
 								</ListView.ItemContainerStyle>
 							</ListView>

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace EasyMensa.Models
 {
@@ -13,14 +13,22 @@ namespace EasyMensa.Models
 		public string Name
 		{
 			get { return _name; }
-			set // Filters out shitty spaces and splits the name and the description of a meal
+			set // Splits the name and description of the meal, filters out stuff
 			{
-				value = Regex.Replace(value, @"  ", " ");
-				value = Regex.Replace(value, @" ,", ",");
-				var substrings = Regex.Split(value, "(mit|und)");
+				var substrings = value.Split(new[] {" mit ", " | "}, StringSplitOptions.RemoveEmptyEntries);
 				_name = substrings[0];
-				substrings[0] = "";
-				Description = String.Join("", substrings);
+					//.Trim(' ');
+
+				// replace first bar with "mit", last with "und" and the others with ","
+				if (substrings.Length == 2)
+				{
+					Description = $"mit {substrings[1]}";
+				}
+				else if (substrings.Length > 2)
+				{
+					Description =
+						$"mit {string.Join(", ", substrings.Skip(1).Take(substrings.Length - 2))} und {substrings[substrings.Length - 1]}";
+				}
 			}
 		}
 
@@ -39,6 +47,17 @@ namespace EasyMensa.Models
 			Category = category;
 			Prices = prices;
 			Notes = notes;
+		}
+
+		private static string ReplaceLastOccurrence(string source, string find, string replace)
+		{
+			int place = source.LastIndexOf(find);
+
+			if (place == -1)
+				return source;
+
+			string result = source.Remove(place, find.Length).Insert(place, replace);
+			return result;
 		}
 	}
 

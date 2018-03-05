@@ -29,5 +29,27 @@ namespace EasyMensa
 	    {
 		    MySplitView.IsPaneOpen = !MySplitView.IsPaneOpen;
 	    }
+
+
+		// https://stackoverflow.com/a/40035354
+		private void MealList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+	    {
+		    if (sender == null) return;
+
+			//Assign DataTemplate for selected items
+			foreach (var item in e.AddedItems)
+		    {
+			    ListViewItem lvi = (sender as ListView).ContainerFromItem(item) as ListViewItem;
+			    lvi.ContentTemplate = (DataTemplate) this.Resources["MealTemplateExpanded"];
+		    }
+
+		    //Remove DataTemplate for unselected items
+		    foreach (var item in e.RemovedItems)
+		    {
+			    ListViewItem lvi = (sender as ListView).ContainerFromItem(item) as ListViewItem;
+			    lvi.ContentTemplate = (DataTemplate) this.Resources["MealTemplate"];
+		    }
+
+	    }
     }
 }

@@ -27,13 +27,13 @@ namespace EasyMensa.ViewModels
 			canteenCollection = new ObservableCollection<NotifyTaskCompletion<Canteen>>
 			{
 				new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(187)),  //  Academica
-				new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(95)),  //  Ahorn
-				new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(96)),  //  Vita
-				new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(94)),  //  Templergraben
-				new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(93)),  //  Cafete
-				new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(99)),  //  Goethe
-				new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(98)),  //  EUPS
-				new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(187))  //  Bayernalle
+				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(95)),  //  Ahorn
+				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(96)),  //  Vita
+				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(94)),  //  Templergraben
+				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(93)),  //  Cafete
+				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(99)),  //  Goethe
+				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(98)),  //  EUPS
+				//new NotifyTaskCompletion<Canteen>(OpenMensaFetcher.GetCanteenAysnc(187))  //  Bayernalle
 			};
 
 			SelectedCanteen = canteenCollection[0];

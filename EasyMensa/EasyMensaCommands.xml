@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<VoiceCommands xmlns="http://schemas.microsoft.com/voicecommands/1.2">
+	<CommandSet xml:lang="de" Name="EasyMensaCommandSet_de">
+		<AppName> Mensa </AppName>
+
+		<Command Name="showMenuToday">
+			<Example> Was gibt es heute in der Mensa? </Example>
+			<ListenFor RequireAppName="ExplicitlySpecified"> was gibt es [heute] in der {builtin:AppName}? </ListenFor>
+		</Command>
+	</CommandSet>
+</VoiceCommands>
