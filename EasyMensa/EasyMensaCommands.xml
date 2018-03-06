@@ -3,6 +3,7 @@
 	<CommandSet xml:lang="de-DE" Name="EasyMensaCommandSet_de">
 		<CommandPrefix> Mensa </CommandPrefix>
 		<Example> Was gibt es heute in der Mensa? </Example>
+		
 		<Command Name="showMenuToday">
 			<Example> Was gibt es heute in der Mensa? </Example>
 			<ListenFor> Was gibt es [heute] in der Mensa? </ListenFor>
@@ -10,5 +11,48 @@
 			<ListenFor> Zeige mir das Menü! </ListenFor>
 			<VoiceCommandService Target="EasyMensaVoiceCommandService" />
 		</Command>
+
+		<Command Name="showMenu">
+			<Example> Was gibt es morgen? </Example>
+			<ListenFor> Was gibt es {dayAdverb} [in der Mensa]? </ListenFor>
+			<ListenFor> Zeig mir das Menü [für][von] {dayAdverb}! </ListenFor>
+			<VoiceCommandService Target="EasyMensaVoiceCommandService" />
+		</Command>
+
+		<Command Name="showCategory">
+			<Example> Was ist der Klassiker morgen? </Example>
+			<ListenFor> Was ist [der][die][das] {category} [für] {dayAdverb}? </ListenFor>
+			<ListenFor> Zeige mir [den][die][das] {category} für {dayAdverb}! </ListenFor>
+			<VoiceCommandService Target="EasyMensaVoiceCommandService" />
+		</Command>
+
+		<PhraseList Label="category">
+			<Item> Tellergericht </Item>
+			<Item> Vegetarisch </Item>
+			<Item> Empfehlung [des Tages] </Item>
+			<Item> Klassiker </Item>
+			<Item> Pizza des Tages </Item>
+			<Item> Pizza </Item>
+			<Item> Pizza Classics </Item>
+			<Item> Burger des Tages </Item>
+			<Item> Burger </Item>
+			<Item> Burger Classics </Item>
+			<Item> Express </Item>
+			<Item> Pasta </Item>
+			<Item> Wok </Item>
+			<Item> Fingerfood </Item>
+			<Item> Sandwich </Item>
+			<Item> Flammengrill </Item>
+			<Item> Ofenkartoffel </Item>
+			<Item> Hauptbeilage </Item>
+		</PhraseList>
+		
+		<PhraseList Label="dayAdverb">
+			<Item> vorgestern </Item>
+			<Item> gestern </Item>
+			<Item> heute </Item>
+			<Item> morgen </Item>
+			<Item> übermorgen </Item>
+		</PhraseList>
 	</CommandSet>
 </VoiceCommands>

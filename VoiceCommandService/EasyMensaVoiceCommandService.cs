@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Resources.Core;
 using Windows.ApplicationModel.VoiceCommands;
-using Windows.Storage;
-using EasyMensa;
 using Test.Models;
 
 namespace EasyMensa.VoiceCommands
@@ -110,8 +105,40 @@ namespace EasyMensa.VoiceCommands
 					// perform the appropriate command.
 					switch (voiceCommand.CommandName)
 					{
+						case "showCategory":
+							string spokenCategory = "";
+							try
+							{
+								spokenCategory = voiceCommand.Properties["category"][0];
+							}
+							catch
+							{
+								// 
+							}
+
+							string spokenDayAdverb = "";
+							try
+							{
+								spokenDayAdverb = voiceCommand.Properties["dayAdverb"][0];
+							}
+							catch
+							{
+								spokenDayAdverb = "heute";
+							}
+							await SendCategoryAsync(spokenDayAdverb, spokenCategory);
+							break;
+						case "showMenu":
 						case "showMenuToday":
-							await SendMenuAsync();
+							string spokenDayAdverb1 = "";
+							try
+							{
+								spokenDayAdverb1 = voiceCommand.Properties["dayAdverb"][0];
+							}
+							catch
+							{
+								spokenDayAdverb1 = "heute";
+							}
+							await SendMenuAsync(spokenDayAdverb1);
 							break;
 						default:
 							// As with app activation VCDs, we need to handle the possibility that
@@ -128,6 +155,44 @@ namespace EasyMensa.VoiceCommands
 			}
 		}
 
+		private async Task SendCategoryAsync(string spokenDayAdverb, string spokenCategory)
+		{
+			DateTime date = parseDate(spokenDayAdverb);
+			var menu = await OpenMensaFetcher.FetchMealsAsync(187, date);
+			var mealContentTiles = new List<VoiceCommandContentTile>();
+
+			foreach (var meal in menu.
+				FindAll(x => x.Category.ToLower().Contains(spokenCategory.ToLower())))
+			{
+				var mealTile = new VoiceCommandContentTile
+				{
+					ContentTileType = VoiceCommandContentTileType.TitleWithText,
+					Title = meal.Name,
+					TextLine1 = meal.Description,
+					TextLine2 = meal.Category,
+					TextLine3 = string.Format("{0:C2}", meal.Prices.Students)
+				};
+				mealContentTiles.Add(mealTile);
+			}
+
+			string displayMessage;
+			string spokenMessage;
+
+			if (mealContentTiles.Count == 0)
+			{
+				displayMessage =
+					spokenMessage = $"Es konnten keine Einträge für {spokenCategory} und {spokenDayAdverb} gefunden werden";
+			}
+			else
+			{
+				displayMessage = $"Die Ergebnisse für {spokenCategory} und {spokenDayAdverb}:";
+				spokenMessage = $"{spokenDayAdverb} gibt es {mealContentTiles[0].Title}!";
+			}
+
+			await SendContentToCortana(displayMessage, spokenMessage, mealContentTiles);
+		}
+
+
 		/// <summary>
 		/// Sends the today's canteen menu (async) to Cortana.
 		/// Cortana then displays the first four entries of the Menu: Tellergericht, Vegetarisch, Empfehlung, Klassiker
@@ -135,9 +200,10 @@ namespace EasyMensa.VoiceCommands
 		/// Only for today,de-DE, mensa academica (187)
 		/// </summary>
 		/// <returns></returns>
-		private async Task SendMenuAsync()
+		private async Task SendMenuAsync(string spokenDayAdverb)
 		{
-			var mealList = await OpenMensaFetcher.FetchMealsAsync(187, DateTime.Today);
+			DateTime date = parseDate(spokenDayAdverb);
+			var mealList = await OpenMensaFetcher.FetchMealsAsync(187, date);
 			var mealContentTiles = new List<VoiceCommandContentTile>();
 
 			// check for Tellergericht, Vegetarisch, Empfehlung, Klassiker
@@ -155,17 +221,98 @@ namespace EasyMensa.VoiceCommands
 				};
 				mealContentTiles.Add(mealTile);
 			}
+			// check for Haupt- & Nebenbeilage
+			// needs to be changed if the order imposed by the API changes
+			for (int j = mealList.Count - 2; j < mealList.Count; j++)
+			{
+				var meal = mealList[j];
+				var mealTile = new VoiceCommandContentTile
+				{
+					ContentTileType = VoiceCommandContentTileType.TitleWithText,
+					Title = meal.Name,
+					TextLine1 = meal.Category
+				};
+				mealContentTiles.Add(mealTile);
+			}
 
+			string displayMessage;
+			string spokenMessage;
+
+			if (mealList.Count == 0)
+			{
+				displayMessage = spokenMessage = "Ich konnte nichts finden.";
+			}
+			else
+			{
+				displayMessage = $"Das Menü für {spokenDayAdverb}";
+				if (mealContentTiles.Count > 3)
+				{
+					spokenMessage = $"Der Klassiker ist {mealContentTiles[3].Title}";
+				}
+				else
+				{
+					spokenMessage = $"Es gibt {mealContentTiles[0].Title}";
+				}
+			}
+
+			await SendContentToCortana(displayMessage, spokenMessage, mealContentTiles);
+		}
+
+
+		/// <summary>
+		/// Sends the parameters to Cortana
+		/// </summary>
+		/// <param name="displayMessage"></param>
+		/// <param name="spokenMessage"></param>
+		/// <param name="contentTiles"></param>
+		/// <returns></returns>
+		private async Task SendContentToCortana(string displayMessage, string spokenMessage, IEnumerable<VoiceCommandContentTile> contentTiles)
+		{
 			var userMessage = new VoiceCommandUserMessage
 			{
-				DisplayMessage = $"Das Menü für heute, {DateTime.Today.ToString("dddd", new CultureInfo("de-DE"))}:",
-				SpokenMessage = $"Der Klassiker ist {mealContentTiles[3].Title}!" //respond with klassiker
+				DisplayMessage = displayMessage,
+				SpokenMessage = spokenMessage
 			};
 
-			var response = VoiceCommandResponse.CreateResponse(userMessage, mealContentTiles);
+			await SendContentToCortana(userMessage, contentTiles);
+		}
+
+
+		private async Task SendContentToCortana(VoiceCommandUserMessage userMessage, IEnumerable<VoiceCommandContentTile> contentTiles)
+		{
+			var response = VoiceCommandResponse.CreateResponse(userMessage, contentTiles);
 
 			await voiceServiceConnection.ReportSuccessAsync(response);
 		}
+
+
+		private DateTime parseDate(string spokenDayAdverb)
+		{
+			int dayDifference;
+			switch (spokenDayAdverb)
+			{
+				case "heute":
+					dayDifference = 0;
+					break;
+				case "gestern":
+					dayDifference = -1;
+					break;
+				case "vorgestern":
+					dayDifference = -2;
+					break;
+				case "morgen":
+					dayDifference = 1;
+					break;
+				case "übermorgen":
+					dayDifference = 2;
+					break;
+				default:
+					dayDifference = 0;
+					break;
+			}
+			return DateTime.Today.AddDays(dayDifference);
+		}
+
 
 		private async Task RespondToUser(string text)
 		{
