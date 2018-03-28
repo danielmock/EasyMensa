@@ -94,6 +94,7 @@
 						   Grid.ColumnSpan="2"
 						   Grid.Column="0"
 						   Text="{x:Bind Notes, Converter={StaticResource StringListToStringConverter}}"
+						   Visibility="{x:Bind Description, Converter={StaticResource StringToVisibilityConverter}}"
 						   Style="{StaticResource BodyTextBlockStyle}"
 						   Foreground="{ThemeResource SystemControlBackgroundBaseMediumBrush}" />
 			</Grid>
@@ -157,7 +158,7 @@
 			
 			<!-- Pane -->
 			<SplitView.Pane>
-				<ListView ItemsSource="{x:Bind ViewModel.canteenCollection}"
+				<ListView ItemsSource="{x:Bind ViewModel.CanteenCollection}"
 						  SelectedItem="{Binding SelectedCanteen, Mode=TwoWay}"
 						  ItemClick="HamburgerButton_OnClick"
 						  IsItemClickEnabled="True">
@@ -191,7 +192,8 @@
 							<!-- Open Day -->
 							<ListView ItemsSource="{x:Bind Meals}"
 									  ItemTemplate="{StaticResource MealTemplate}"
-									  SelectionChanged="MealList_OnSelectionChanged">
+									  SelectionChanged="MealList_OnSelectionChanged"
+									  SelectionMode="Single">
 
 								<!-- Stretches DataTemplate & removes padding-->
 								<ListView.ItemContainerStyle>

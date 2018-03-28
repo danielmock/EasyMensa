@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.VoiceCommands;
+using Windows.Foundation.Metadata;
 using Windows.Storage;
 using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -12,19 +15,19 @@ using Windows.UI.Xaml.Navigation;
 
 namespace EasyMensa
 {
-    /// <summary>
-    /// Stellt das anwendungsspezifische Verhalten bereit, um die Standardanwendungsklasse zu ergänzen.
-    /// </summary>
-    sealed partial class App : Application
-    {
+	/// <summary>
+	/// Stellt das anwendungsspezifische Verhalten bereit, um die Standardanwendungsklasse zu ergänzen.
+	/// </summary>
+	sealed partial class App
+	{
         /// <summary>
         /// Initialisiert das Singletonanwendungsobjekt. Dies ist die erste Zeile von erstelltem Code
         /// und daher das logische Äquivalent von main() bzw. WinMain().
         /// </summary>
         public App()
         {
-            this.InitializeComponent();
-            this.Suspending += OnSuspending;
+            InitializeComponent();
+            Suspending += OnSuspending;
         }
 
         /// <summary>
@@ -33,67 +36,71 @@ namespace EasyMensa
         /// </summary>
         /// <param name="e">Details über Startanforderung und -prozess.</param>
         protected override async void OnLaunched(LaunchActivatedEventArgs e)
-        {
+		{
 #if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                this.DebugSettings.EnableFrameRateCounter = true;
-            }
+			if (Debugger.IsAttached)
+			{
+				DebugSettings.EnableFrameRateCounter = true;
+			}
 #endif
-            Frame rootFrame = Window.Current.Content as Frame;
+			Frame rootFrame = Window.Current.Content as Frame;
 
-            // App-Initialisierung nicht wiederholen, wenn das Fenster bereits Inhalte enthält.
-            // Nur sicherstellen, dass das Fenster aktiv ist.
-            if (rootFrame == null)
-            {
-                // Frame erstellen, der als Navigationskontext fungiert und zum Parameter der ersten Seite navigieren
-                rootFrame = new Frame();
+			// App-Initialisierung nicht wiederholen, wenn das Fenster bereits Inhalte enthält.
+			// Nur sicherstellen, dass das Fenster aktiv ist.
+			if (rootFrame == null)
+			{
+				// Frame erstellen, der als Navigationskontext fungiert und zum Parameter der ersten Seite navigieren
+				rootFrame = new Frame();
 
-                rootFrame.NavigationFailed += OnNavigationFailed;
+				rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
-                {
-                    //TODO: Zustand von zuvor angehaltener Anwendung laden
-                }
+				if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+				{
+					//TODO: Zustand von zuvor angehaltener Anwendung laden
+				}
 
-                // Den Frame im aktuellen Fenster platzieren
-                Window.Current.Content = rootFrame;
-            }
+				// Den Frame im aktuellen Fenster platzieren
+				Window.Current.Content = rootFrame;
+			}
 
-            if (e.PrelaunchActivated == false)
-            {
-                if (rootFrame.Content == null)
-                {
-                    // Wenn der Navigationsstapel nicht wiederhergestellt wird, zur ersten Seite navigieren
-                    // und die neue Seite konfigurieren, indem die erforderlichen Informationen als Navigationsparameter
-                    // übergeben werden
-                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
-                }
-                // Sicherstellen, dass das aktuelle Fenster aktiv ist
-                Window.Current.Activate();
-            }
+			if (e.PrelaunchActivated == false)
+			{
+				if (rootFrame.Content == null)
+				{
+					// Wenn der Navigationsstapel nicht wiederhergestellt wird, zur ersten Seite navigieren
+					// und die neue Seite konfigurieren, indem die erforderlichen Informationen als Navigationsparameter
+					// übergeben werden
+					rootFrame.Navigate(typeof(MainPage), e.Arguments);
+				}
+				// Sicherstellen, dass das aktuelle Fenster aktiv ist
+				Window.Current.Activate();
+			}
 
 			// Verändert die Statusbar auf Mobilen Geräten
-			if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+			if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
 			{
-				var statusBar = Windows.UI.ViewManagement.StatusBar.GetForCurrentView();
+				var statusBar = StatusBar.GetForCurrentView();
 				if (statusBar != null)
 				{
 					statusBar.BackgroundOpacity = 1;
-					statusBar.BackgroundColor = ((SolidColorBrush) Current.Resources["MyTitleBarBackgroundBrush"]).Color;
+					statusBar.BackgroundColor = ((SolidColorBrush)Current.Resources["MyTitleBarBackgroundBrush"]).Color;
 					statusBar.ForegroundColor = Colors.White;
 				}
 			}
 
+			// Installiere Voice Commands
 			await InstallVCD();
-        }
+			//await StartLiveTileUpdater();
+		}
 
-        /// <summary>
-        /// Wird aufgerufen, wenn die Navigation auf eine bestimmte Seite fehlschlägt
-        /// </summary>
-        /// <param name="sender">Der Rahmen, bei dem die Navigation fehlgeschlagen ist</param>
-        /// <param name="e">Details über den Navigationsfehler</param>
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+
+
+		/// <summary>
+		/// Wird aufgerufen, wenn die Navigation auf eine bestimmte Seite fehlschlägt
+		/// </summary>
+		/// <param name="sender">Der Rahmen, bei dem die Navigation fehlgeschlagen ist</param>
+		/// <param name="e">Details über den Navigationsfehler</param>
+		void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }

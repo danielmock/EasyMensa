@@ -2,11 +2,6 @@
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
 using Microsoft.Practices.ServiceLocation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasyMensa.ViewModels
 {
@@ -25,10 +20,6 @@ namespace EasyMensa.ViewModels
 			if (ViewModelBase.IsInDesignModeStatic)
 			{
 				// Create design time view services and models
-			}
-			else
-			{
-				// Create run time view services and models
 			}
 
 			//Register your services used here

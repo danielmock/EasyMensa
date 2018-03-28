@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyMensa", "EasyMensa\Easy
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{9689938B-5A07-492B-912A-0ABC0A19F10C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceCommandService", "VoiceCommandService\VoiceCommandService.csproj", "{64C9F2F8-723D-4093-8872-3F27B365981F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundTasks", "VoiceCommandService\BackgroundTasks.csproj", "{64C9F2F8-723D-4093-8872-3F27B365981F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

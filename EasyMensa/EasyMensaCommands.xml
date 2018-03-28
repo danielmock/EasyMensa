@@ -22,6 +22,7 @@
 		<Command Name="showCategory">
 			<Example> Was ist der Klassiker morgen? </Example>
 			<ListenFor> Was ist [der][die][das] {category} [für] {dayAdverb}? </ListenFor>
+			<ListenFor> Was gibt es {dayAdverb} als {category} </ListenFor>
 			<ListenFor> Zeige mir [den][die][das] {category} für {dayAdverb}! </ListenFor>
 			<VoiceCommandService Target="EasyMensaVoiceCommandService" />
 		</Command>

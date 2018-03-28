@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.Background;
-using Windows.ApplicationModel.Resources.Core;
 using Windows.ApplicationModel.VoiceCommands;
 using Test.Models;
 
-namespace EasyMensa.VoiceCommands
+namespace EasyMensa.BackgroundTasks
 {
 
 	public sealed class EasyMensaVoiceCommandService : IBackgroundTask
@@ -18,7 +17,7 @@ namespace EasyMensa.VoiceCommands
 		/// the service connection is maintained for the lifetime of a cortana session, once a voice command
 		/// has been triggered via Cortana.
 		/// </summary>
-		VoiceCommandServiceConnection voiceServiceConnection;
+		private VoiceCommandServiceConnection _voiceServiceConnection;
 
 		/// <summary>
 		/// Lifetime of the background service is controlled via the BackgroundTaskDeferral object, including
@@ -27,25 +26,10 @@ namespace EasyMensa.VoiceCommands
 		/// 
 		/// Background tasks can run for a maximum of 30 seconds.
 		/// </summary>
-		BackgroundTaskDeferral serviceDeferral;
+		private BackgroundTaskDeferral _serviceDeferral;
 
 		/// <summary>
-		/// ResourceMap containing localized strings for display in Cortana.
-		/// </summary>
-		ResourceMap cortanaResourceMap;
-
-		/// <summary>
-		/// The context for localized strings.
-		/// </summary>
-		ResourceContext cortanaContext;
-
-		/// <summary>
-		/// Get globalization-aware date formats.
-		/// </summary>
-		DateTimeFormatInfo dateFormatInfo;
-
-		/// <summary>
-		/// Background task entrypoint. Voice Commands using the <VoiceCommandService Target="...">
+		/// Background task entrypoint. Voice Commands using the <VoiceCommandService Target="..."/>
 		/// tag will invoke this when they are recognized by Cortana, passing along details of the 
 		/// invocation. 
 		/// 
@@ -66,7 +50,7 @@ namespace EasyMensa.VoiceCommands
 		/// <param name="taskInstance">Connection to the hosting background service process.</param>
 		public async void Run(IBackgroundTaskInstance taskInstance)
 		{
-			serviceDeferral = taskInstance.GetDeferral();
+			_serviceDeferral = taskInstance.GetDeferral();
 
 			// Register to receive an event if Cortana dismisses the background task. This will
 			// occur if the task takes too long to respond, or if Cortana's UI is dismissed.
@@ -75,15 +59,6 @@ namespace EasyMensa.VoiceCommands
 
 			var triggerDetails = taskInstance.TriggerDetails as AppServiceTriggerDetails;
 
-			// Load localized resources for strings sent to Cortana to be displayed to the user.
-			cortanaResourceMap = ResourceManager.Current.MainResourceMap.GetSubtree("Resources");
-
-			// Select the system language, which is what Cortana should be running as.
-			cortanaContext = ResourceContext.GetForViewIndependentUse();
-
-			// Get the currently used system date format
-			dateFormatInfo = CultureInfo.CurrentCulture.DateTimeFormat;
-
 			// This should match the uap:AppService and VoiceCommandService references from the 
 			// package manifest and VCD files, respectively. Make sure we've been launched by
 			// a Cortana Voice Command.
@@ -91,54 +66,48 @@ namespace EasyMensa.VoiceCommands
 			{
 				try
 				{
-					voiceServiceConnection =
+					_voiceServiceConnection =
 						VoiceCommandServiceConnection.FromAppServiceTriggerDetails(triggerDetails);
 
-					voiceServiceConnection.VoiceCommandCompleted += OnVoiceCommandCompleted;
+					_voiceServiceConnection.VoiceCommandCompleted += OnVoiceCommandCompleted;
 
 					// GetVoiceCommandAsync establishes initial connection to Cortana, and must be called prior to any 
 					// messages sent to Cortana. Attempting to use ReportSuccessAsync, ReportProgressAsync, etc
 					// prior to calling this will produce undefined behavior.
-					VoiceCommand voiceCommand = await voiceServiceConnection.GetVoiceCommandAsync();
+					VoiceCommand voiceCommand = await _voiceServiceConnection.GetVoiceCommandAsync();
 
 					// Depending on the operation (defined in AdventureWorks:AdventureWorksCommands.xml)
 					// perform the appropriate command.
+
+					string spokenCategory;
+					string spokenDayAdverb;
+
+					try
+					{
+						spokenCategory = voiceCommand.Properties["category"][0];
+					}
+					catch (Exception)
+					{
+						spokenCategory = string.Empty;
+					}
+
+					try
+					{
+						spokenDayAdverb = voiceCommand.Properties["dayAdverb"][0];
+					}
+					catch
+					{
+						spokenDayAdverb = "heute";
+					}
+
 					switch (voiceCommand.CommandName)
 					{
 						case "showCategory":
-							string spokenCategory = "";
-							try
-							{
-								spokenCategory = voiceCommand.Properties["category"][0];
-							}
-							catch
-							{
-								// 
-							}
-
-							string spokenDayAdverb = "";
-							try
-							{
-								spokenDayAdverb = voiceCommand.Properties["dayAdverb"][0];
-							}
-							catch
-							{
-								spokenDayAdverb = "heute";
-							}
 							await SendCategoryAsync(spokenDayAdverb, spokenCategory);
 							break;
 						case "showMenu":
 						case "showMenuToday":
-							string spokenDayAdverb1 = "";
-							try
-							{
-								spokenDayAdverb1 = voiceCommand.Properties["dayAdverb"][0];
-							}
-							catch
-							{
-								spokenDayAdverb1 = "heute";
-							}
-							await SendMenuAsync(spokenDayAdverb1);
+							await SendMenuAsync(spokenDayAdverb);
 							break;
 						default:
 							// As with app activation VCDs, we need to handle the possibility that
@@ -150,7 +119,7 @@ namespace EasyMensa.VoiceCommands
 				}
 				catch (Exception ex)
 				{
-					System.Diagnostics.Debug.WriteLine("Handling Voice Command failed " + ex.ToString());
+					Debug.WriteLine("Handling Voice Command failed " + ex);
 				}
 			}
 		}
@@ -160,6 +129,11 @@ namespace EasyMensa.VoiceCommands
 			DateTime date = parseDate(spokenDayAdverb);
 			var menu = await OpenMensaFetcher.FetchMealsAsync(187, date);
 			var mealContentTiles = new List<VoiceCommandContentTile>();
+
+			if (spokenCategory == "Pizza" || spokenCategory == "Burger")
+			{
+				spokenCategory += " des Tages";
+			}
 
 			foreach (var meal in menu.
 				FindAll(x => x.Category.ToLower().Contains(spokenCategory.ToLower())))
@@ -282,7 +256,7 @@ namespace EasyMensa.VoiceCommands
 		{
 			var response = VoiceCommandResponse.CreateResponse(userMessage, contentTiles);
 
-			await voiceServiceConnection.ReportSuccessAsync(response);
+			await _voiceServiceConnection.ReportSuccessAsync(response);
 		}
 
 
@@ -314,15 +288,6 @@ namespace EasyMensa.VoiceCommands
 		}
 
 
-		private async Task RespondToUser(string text)
-		{
-			var userMessage = new VoiceCommandUserMessage();
-			userMessage.DisplayMessage = userMessage.SpokenMessage = text;
-			VoiceCommandResponse response = VoiceCommandResponse.CreateResponse(userMessage);
-			await voiceServiceConnection.ReportSuccessAsync(response);
-		}
-
-
 		/// <summary>
 		/// Provide a simple response that launches the app. Expected to be used in the
 		/// case where the voice command could not be recognized (eg, a VCD/code mismatch.)
@@ -331,14 +296,14 @@ namespace EasyMensa.VoiceCommands
 		{
 			var userMessage = new VoiceCommandUserMessage
 			{
-				SpokenMessage = cortanaResourceMap.GetValue("LaunchingAdventureWorks", cortanaContext).ValueAsString
+				SpokenMessage = "Starte Easy Mensa"
 			};
 
 			var response = VoiceCommandResponse.CreateResponse(userMessage);
 
 			response.AppLaunchArgument = "";
 
-			await voiceServiceConnection.RequestAppLaunchAsync(response);
+			await _voiceServiceConnection.RequestAppLaunchAsync(response);
 		}
 
 		/// <summary>
@@ -351,7 +316,7 @@ namespace EasyMensa.VoiceCommands
 		/// <param name="args">Contains an Enumeration indicating why the command was terminated.</param>
 		private void OnVoiceCommandCompleted(VoiceCommandServiceConnection sender, VoiceCommandCompletedEventArgs args)
 		{
-			serviceDeferral?.Complete();
+			_serviceDeferral?.Complete();
 		}
 
 		/// <summary>
@@ -363,9 +328,9 @@ namespace EasyMensa.VoiceCommands
 		/// <param name="reason">Contains an enumeration with the reason for task cancellation</param>
 		private void OnTaskCanceled(IBackgroundTaskInstance sender, BackgroundTaskCancellationReason reason)
 		{
-			System.Diagnostics.Debug.WriteLine("Task cancelled, clean up");
+			Debug.WriteLine("Task cancelled, clean up");
 			//Complete the service deferral
-			serviceDeferral?.Complete();
+			_serviceDeferral?.Complete();
 		}
 	}
 }

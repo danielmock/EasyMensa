@@ -148,17 +148,15 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Test\Test.csproj">
       <Project>{9689938b-5a07-492b-912a-0abc0a19f10c}</Project>
       <Name>Test</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VoiceCommandService\VoiceCommandService.csproj">
+    <ProjectReference Include="..\VoiceCommandService\BackgroundTasks.csproj">
       <Project>{64c9f2f8-723d-4093-8872-3f27b365981f}</Project>
-      <Name>VoiceCommandService</Name>
+      <Name>BackgroundTasks</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
